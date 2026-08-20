@@ -7,6 +7,15 @@ and Equitable Cooling Performance Index: a framework for optimising urban tree
 placement across six Philippine tree functional types, weighting cooling
 benefit by the vulnerability of the people who receive it.
 
+[![Python 3.13](https://img.shields.io/badge/Python-3.13-blue.svg)](https://www.python.org/downloads/release/python-3130/)
+[![numpy 2.5.2](https://img.shields.io/badge/numpy-2.5.2-lightblue.svg)](https://numpy.org/)
+[![scipy 1.18.0](https://img.shields.io/badge/scipy-1.18.0-lightblue.svg)](https://scipy.org/)
+[![pandas 3.0.5](https://img.shields.io/badge/pandas-3.0.5-lightblue.svg)](https://pandas.pydata.org/)
+[![streamlit ≥1.40](https://img.shields.io/badge/streamlit-≥1.40-lightblue.svg)](https://streamlit.io/)
+[![plotly ≥5.24](https://img.shields.io/badge/plotly-≥5.24-lightblue.svg)](https://plotly.com/)
+[![pywebview ≥6.0](https://img.shields.io/badge/pywebview-≥6.0-lightblue.svg)](https://pywebview.flowrl.com/)
+[![kaleido ≥1.3.0](https://img.shields.io/badge/kaleido-≥1.3.0-lightblue.svg)](https://github.com/plotly/kaleido)
+
 This directory is the codebase handed to whoever picks this research up next.
 It exists because the version that produced the published results was a single
 3,700-line file with no interface, and the harnesses that regenerated those
