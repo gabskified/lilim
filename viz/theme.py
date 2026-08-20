@@ -55,6 +55,13 @@ TERRACOTTA = "#C4623F"    # heat / vulnerability / priority
 AMBER = "#D69A3C"         # mid priority
 SLATE = "#5B7C99"         # the contrast arm in comparisons
 
+# Cells where the model delivers exactly zero cooling because the crown-
+# competition term has saturated. A deliberately off-scale colour: these are
+# real zeros, and against the near-white low end of COOLING_SCALE they were
+# indistinguishable from "almost no cooling", which made them read as blank
+# discs punched out of the map rather than as a result.
+SUPPRESSED = "#B9B2A6"
+
 # Land-use classes. Keys match the integer codes in core.config.
 LAND_USE_COLORS = {
     1: "#9A938A",         # Prohibited -- receding warm grey
