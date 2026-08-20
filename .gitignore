@@ -18,3 +18,7 @@ runs/
 outputs/
 parity/reports/
 parity/*.tmp.md
+
+# Figures saved from the app. Research output belongs in results/, not here —
+# this is the scratch destination for "Save figure".
+exports/
