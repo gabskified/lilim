@@ -263,6 +263,20 @@ correct one.**
 These are open questions in the science, not bugs in this code. A tool that
 hides them is worse than one that does not exist.
 
+- **A tree delivers exactly zero cooling directly beneath its own canopy.** The
+  crown-competition term damps cooling by `1/(1+exp(K·(CCA − threshold)))`, but
+  `CCA` accumulates crown area in **square metres** (70–450 m² per crown) while
+  the threshold is `1.2`. The logistic is fully saturated by about 10 m², so the
+  factor is ~0.9975 outside any crown and exactly `0.0` inside one — a step at
+  the crown edge, not a graded penalty. On the canonical grid this zeroes
+  **16.3% of the domain** and destroys **46.3%** of all generated cooling, and it
+  is physically inverted, since shade is greatest under a canopy. The threshold
+  reads as a dimensionless overlap measure being compared against an absolute
+  area. **This app reproduces the behaviour exactly** — it is at parity with the
+  reference implementation and must not diverge — but marks the zeroed cells in
+  the cooling-field figure so they are legible as a result rather than mistaken
+  for missing data. Correcting the model changes every reported number and is
+  awaiting an authorship decision.
 - **The coarse equity-weight map** here is corrected; the audited reference
   implementation's version is still its own transpose, pending author sign-off
   on the fix. The two will disagree on that one figure.
