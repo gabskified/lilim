@@ -30,6 +30,7 @@ from __future__ import annotations
 import os
 import sys
 import time
+from pathlib import Path
 
 import numpy as np
 import streamlit as st
@@ -100,6 +101,12 @@ def export_control(fig, name: str, caption: str | None):
     The fragment matters: without it, pressing a save button reruns the entire
     script, re-rendering every tab. Rendering is also lazy -- bytes are only
     produced when asked for, never eagerly for sixteen figures on every rerun.
+    
+    The file is written to disk by this process and its absolute path is shown.
+    A browser download is offered as well but is deliberately the secondary
+    route: in the desktop shell the webview cancels downloads outright unless
+    the launcher enables them, and even then the file lands wherever the save
+    dialog was last pointed. See `viz/export.py`'s `export_dir()`.
     """
     label = name.replace("_", " ")
     with st.popover("Save figure", use_container_width=False):
@@ -116,7 +123,7 @@ def export_control(fig, name: str, caption: str | None):
             fmt = "HTML (interactive)"
             st.caption(f"PNG and SVG unavailable — {reason}")
 
-        if st.button("Prepare file", key=f"{state_key}_go"):
+        if st.button("Save to disk", key=f"{state_key}_go", type="primary"):
             try:
                 if fmt.startswith("PNG"):
                     data, ext, mime = (vx.to_png_bytes(fig, caption), "png", "image/png")
@@ -125,15 +132,24 @@ def export_control(fig, name: str, caption: str | None):
                 else:
                     data, ext, mime = (vx.to_html_bytes(fig, caption, label),
                                        "html", "text/html")
-                st.session_state[state_key] = (data, vx.filename(name, ext), mime)
+                fname = vx.filename(name, ext)
+                path = vx.save(data, fname)
+                st.session_state[state_key] = (data, fname, mime, str(path))
             except Exception as exc:
                 st.session_state.pop(state_key, None)
                 st.error(f"Could not render: {exc}")
 
         ready = st.session_state.get(state_key)
         if ready:
-            data, fname, mime = ready
-            st.download_button(f"Download  ({len(data) / 1024:.0f} KB)",
+            data, fname, mime, path = ready
+            st.success(f"Saved · {len(data) / 1024:.0f} KB")
+            st.code(path, language=None)
+            if st.button("Open folder", key=f"{state_key}_open"):
+                opened, why = vx.reveal(Path(path))
+                if not opened:
+                    st.caption(f"Could not open the folder ({why}) — "
+                               f"the path above is still correct.")
+            st.download_button(f"…or download a copy  ({len(data) / 1024:.0f} KB)",
                                data=data, file_name=fname, mime=mime,
                                key=f"{state_key}_dl")
 
