@@ -258,27 +258,6 @@ correct one.**
 
 ---
 
-## Where the real record lives
-
-This code is the *what*. The *why* is in the project's own documents, and the
-next group should start there rather than reverse-engineering intent from
-source. Nearly every non-obvious choice in `core/` — the fixed study-wide
-normalization, the tree-count sweep range, the species-height assumptions, the
-state-isolation guard in the sensitivity sweep, the corrected cellular-automaton
-recursion — traces to a specific, dated, authorised entry:
-
-- **[`docs/DECISIONS.md`](../docs/DECISIONS.md)** — every semantic change made
-  to the reference implementation: what changed, why, who authorised it, and
-  which commit applied it. Read this first.
-- **[`docs/PROJECT_LOG.md`](../docs/PROJECT_LOG.md)** — the append-only
-  evidentiary trail. Where a decision's reasoning is not fully captured in the
-  decision itself, it is here.
-- **[`CLAUDE.md`](../CLAUDE.md)** — the project's scope constraints and its
-  standing rules, including the two that matter most: never invent data, and
-  never declare something verified by reading it rather than running it.
-
----
-
 ## Known open items
 
 These are open questions in the science, not bugs in this code. A tool that
