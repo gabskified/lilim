@@ -18,13 +18,21 @@ Two formats:
 
 `available()` probes rather than assumes. kaleido needs a browser it can drive,
 and whether one is present is a property of the machine, not of this code.
+
+Files are written **server-side**, into `lilim/exports/`, and the app shows the
+absolute path it wrote to. See `export_dir()` for why that is not a browser
+download.
 """
 from __future__ import annotations
 
 import copy
 import datetime
 import importlib.util
+import os
 import re
+import subprocess
+import sys
+from pathlib import Path
 
 import plotly.graph_objects as go
 
@@ -73,6 +81,59 @@ def filename(name: str, extension: str) -> str:
     """`lilim-<figure>-<timestamp>.<ext>` -- sortable and self-describing."""
     stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     return f"lilim-{slugify(name)}-{stamp}.{extension}"
+
+
+def export_dir() -> Path:
+    """`lilim/exports/`, created on first use.
+
+    Saving server-side rather than handing the browser a download is deliberate.
+    In the desktop shell a download is not merely awkward, it is *cancelled*:
+    pywebview ships `ALLOW_DOWNLOADS = False` and its Windows handler answers
+    `CoreWebView2.DownloadStarting` with `args.Cancel = True` -- silently, with
+    no dialog and no error, so a press of the download button produces nothing
+    at all and no indication that nothing happened.
+
+    The launcher now turns that setting on, but a save dialog still leaves "where
+    did it go" to the user's memory, and it does not exist at all when the app is
+    opened as a browser tab. Writing the file ourselves and printing the absolute
+    path is the same in both, and the path is a fact rather than a default.
+
+    The folder sits beside the app rather than in the user's Downloads because
+    these are research outputs that belong with the tool that made them. It is
+    gitignored.
+    """
+    here = Path(__file__).resolve().parent.parent  # lilim/viz -> lilim
+    out = here / "exports"
+    out.mkdir(parents=True, exist_ok=True)
+    return out
+
+
+def save(data: bytes, name: str) -> Path:
+    """Write `data` into `export_dir()` as `name`; return the absolute path."""
+    path = export_dir() / name
+    path.write_bytes(data)
+    return path.resolve()
+
+
+def reveal(path: Path) -> tuple[bool, str]:
+    """Open a folder in the host's file manager. Returns `(ok, reason)`.
+
+    Best-effort and non-fatal: this runs on whatever machine is hosting the
+    Streamlit process, which for this app is always the user's own, but the
+    saved file's path has already been shown either way -- so a failure here
+    costs nothing and must not raise into the UI.
+    """
+    target = str(path if path.is_dir() else path.parent)
+    try:
+        if sys.platform == "win32":
+            os.startfile(target)  # noqa: S606 - documented Windows API
+        elif sys.platform == "darwin":
+            subprocess.run(["open", target], check=True)
+        else:
+            subprocess.run(["xdg-open", target], check=True)
+        return True, ""
+    except Exception as exc:  # pragma: no cover - platform-dependent
+        return False, str(exc).strip().split("\n")[0][:160]
 
 
 def captioned(fig: go.Figure, caption: str | None,
