@@ -1,0 +1,20 @@
+# lilim-specific build artifacts.
+#
+# The repository root already ignores .venv/, __pycache__/ and *.pyc — those
+# are not repeated here. This file covers only what is specific to this
+# directory.
+
+# Desktop window geometry, remembered between launches. Machine-specific.
+.lilim-window.json
+
+# Streamlit local state and secrets. config.toml IS tracked (it carries the
+# app's theme); secrets never are.
+.streamlit/secrets.toml
+
+# Generated run output and scratch parity reports. PARITY_REPORT.md at the
+# root of parity/ is tracked deliberately — it is the committed evidence for
+# the deliverable's central claim.
+runs/
+outputs/
+parity/reports/
+parity/*.tmp.md

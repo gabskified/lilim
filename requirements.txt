@@ -1,0 +1,39 @@
+# lilim — pinned to the environment the reported results were produced in.
+#
+# The numeric pins are not incidental. Parity with legacy/AuditedCode_1.py is
+# asserted by EXACT equality, and the reference numbers in
+# results/run_20260820_003124_optionB_results_regeneration/ were produced under
+# exactly these versions (see that run's ENVIRONMENT.txt). numpy's legacy
+# RandomState stream is guaranteed stable across versions, so the seeded
+# sequences should survive an upgrade -- but "should" is not "verified", and
+# re-running lilim/parity/check_parity.py is the only way to know. Do that
+# before relaxing any pin below.
+#
+# Python 3.13.
+
+numpy==2.5.2
+scipy==1.18.0
+pandas==3.0.5
+
+# Interface and charts.
+streamlit>=1.40
+plotly>=5.24
+
+# Desktop shell. `python lilim.py` runs the app in a native OS window instead of
+# a browser tab. On Windows this uses the built-in WebView2 runtime; nothing
+# extra to install. Without it, `streamlit run workbench.py` still works.
+pywebview>=6.0
+
+# Static figure export (PNG/SVG). Optional: kaleido drives a Chrome-family
+# browser to rasterise, so it needs one present -- run `plotly_get_chrome` if it
+# cannot find one. HTML export needs none of this and always works, so the app
+# degrades to HTML rather than losing the save feature.
+kaleido>=1.3.0
+
+# Needed only by parity/check_parity.py, which imports legacy/AuditedCode_1.py
+# to compare against it. The reference implementation imports matplotlib and
+# tqdm at module scope, so loading it requires them even though nothing in
+# lilim/core or lilim/viz uses either. Without these the app still runs; the
+# parity check does not.
+matplotlib>=3.9
+tqdm>=4.66

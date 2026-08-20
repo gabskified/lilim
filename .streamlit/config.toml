@@ -1,0 +1,54 @@
+# lilim — the app's visual identity.
+#
+# Streamlit's stock accent is #FF4B4B. It is replaced here, deliberately: this
+# is a scientific instrument about trees and heat, and warm tones are reserved
+# for meaning (heat, vulnerability, priority) rather than spent on chrome. The
+# accent is canopy green and the ground is warm paper rather than clinical
+# white.
+#
+# These values are the same tokens defined in viz/theme.py, which styles the
+# figures. Change them in both places or the app and its charts drift apart.
+
+[theme]
+base = "light"
+
+primaryColor = "#2E6B4F"              # canopy — the single accent
+backgroundColor = "#F7F5F0"           # warm paper
+secondaryBackgroundColor = "#FFFFFF"  # cards, sidebar, table surfaces
+textColor = "#14201C"                 # deep forest black
+linkColor = "#1D4633"
+borderColor = "#DFDAD0"
+
+font = "sans-serif"
+headingFont = "serif"
+codeFont = "monospace"
+
+# The three faces the interface actually uses. Loaded from Google Fonts, which
+# is the one external host a locked-down deployment normally still permits;
+# every family below also names a system fallback in viz/theme.py, so the app
+# degrades to a sensible local face rather than to Times if fonts are blocked.
+[[theme.fontFaces]]
+family = "Inter"
+url = "https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZs.woff2"
+weight = 400
+
+[[theme.fontFaces]]
+family = "Inter"
+url = "https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfAZs.woff2"
+weight = 600
+
+[[theme.fontFaces]]
+family = "Source Serif 4"
+url = "https://fonts.gstatic.com/s/sourceserif4/v13/vEFy2_tTDB4M7-auWDN0ahZJW1ge6NmXpVQ7q-Q.woff2"
+weight = 600
+
+[server]
+headless = true
+fileWatcherType = "auto"
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = true
