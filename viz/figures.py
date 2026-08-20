@@ -64,7 +64,9 @@ CAPTIONS: dict[str, str] = {
     "cooling_field":
         "Colour scale is clipped at the 99th percentile so a single hot crown centre "
         "does not flatten the rest of the field. Crowns are drawn at true metric "
-        "radius.",
+        "radius. The grey discs are not missing data: the crown-competition term "
+        "saturates to exactly zero under any canopy, so the model delivers no "
+        "cooling directly beneath a tree. See the known-open-items in the README.",
     "placement_map":
         "Crowns are drawn at true metric radius over the land-use classes, so "
         "overlap between neighbouring trees is shown to scale.",
