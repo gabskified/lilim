@@ -16,13 +16,6 @@ benefit by the vulnerability of the people who receive it.
 [![pywebview ≥6.0](https://img.shields.io/badge/pywebview-≥6.0-lightblue.svg)](https://pywebview.flowrl.com/)
 [![kaleido ≥1.3.0](https://img.shields.io/badge/kaleido-≥1.3.0-lightblue.svg)](https://github.com/plotly/kaleido)
 
-This directory is the codebase handed to whoever picks this research up next.
-It exists because the version that produced the published results was a single
-3,700-line file with no interface, and the harnesses that regenerated those
-results dropped visualization entirely — across seven full regeneration runs,
-not one chart was ever drawn. Every number was correct and no one could see
-anything.
-
 ---
 
 ## Quick start
