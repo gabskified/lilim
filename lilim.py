@@ -196,6 +196,13 @@ def main() -> int:
         print(f"\n{exc}", file=sys.stderr, flush=True)
         return 1
 
+    # pywebview ships this OFF, and its Windows backend does not merely ignore a
+    # download -- `on_download_starting` answers with `args.Cancel = True`, so
+    # the browser download button produces no file, no dialog and no error. The
+    # app's own save control writes to `lilim/exports/` and does not depend on
+    # this, but the download button beside it is dead without it.
+    webview.settings["ALLOW_DOWNLOADS"] = True
+
     geometry = load_geometry()
     window = webview.create_window(
         WINDOW_TITLE,
