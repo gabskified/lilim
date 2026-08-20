@@ -354,6 +354,38 @@ def cooling_field(grid, cooling_values, tree_placements=None,
                       thickness=12, len=0.6),
         hovertemplate="(%{x:.0f}, %{y:.0f}) m<br>cooling %{z:.4f}<extra></extra>",
     ))
+    # Cells the competition term has driven to zero, marked explicitly.
+    #
+    # These are REAL ZEROS, not missing data and not a drawing artefact. The
+    # crown-competition damping is 1/(1+exp(K*(CCA - threshold))) with a
+    # threshold of 1.2, but CCA accumulates crown area in SQUARE METRES and a
+    # single crown contributes 70-450 m2. The logistic is fully saturated by
+    # about 10 m2, so the factor is ~0.9975 outside any crown and exactly 0.0
+    # inside one -- a step at the crown edge rather than a graded penalty. The
+    # result is that a tree delivers no cooling at all directly beneath itself.
+    #
+    # Rendered against the near-white low end of the cooling ramp these zeros
+    # were indistinguishable from "very little cooling", and read as white discs
+    # obscuring the map. Giving them their own colour and legend entry is what
+    # makes the model's behaviour legible instead of looking like a bug in the
+    # plot. Fixing the model itself is a change to the reference implementation
+    # and is not this module's call -- see the README's known-open-items.
+    suppressed = (cooling <= 0.0)
+    if suppressed.any():
+        mask = np.where(suppressed, 1.0, np.nan)
+        mask = mask.reshape(grid.n_cols_fine, grid.n_rows_fine).T
+        fig.add_trace(go.Heatmap(
+            z=mask,
+            x=grid.fine_x_coords, y=grid.fine_y_coords,
+            colorscale=[[0, theme.SUPPRESSED], [1, theme.SUPPRESSED]],
+            showscale=False, hoverinfo="skip", showlegend=False,
+        ))
+        fig.add_trace(go.Scatter(
+            x=[None], y=[None], mode="markers",
+            marker=dict(size=10, color=theme.SUPPRESSED, symbol="square",
+                        line=dict(color=theme.RULE, width=1)),
+            name="no cooling delivered (crown competition)", showlegend=True,
+        ))
 
     if tree_placements is not None and tree_species_obj is not None:
         shapes = []
@@ -367,7 +399,7 @@ def cooling_field(grid, cooling_values, tree_placements=None,
                 type="circle", xref="x", yref="y",
                 x0=tx - r, x1=tx + r, y0=ty - r, y1=ty + r,
                 line=dict(color=color, width=1.5),
-                fillcolor="rgba(255,255,255,0.10)", layer="above",
+                fillcolor="rgba(0,0,0,0)", layer="above",
             ))
             fig.add_trace(go.Scatter(
                 x=[tx], y=[ty], mode="markers",
