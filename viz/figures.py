@@ -64,9 +64,10 @@ CAPTIONS: dict[str, str] = {
     "cooling_field":
         "Colour scale is clipped at the 99th percentile so a single hot crown centre "
         "does not flatten the rest of the field. Crowns are drawn at true metric "
-        "radius. The grey discs are not missing data: the crown-competition term "
-        "saturates to exactly zero under any canopy, so the model delivers no "
-        "cooling directly beneath a tree. See the known-open-items in the README.",
+        "radius. Cooling is strongest beneath a canopy and falls off with distance; "
+        "crown competition damps it only where crowns actually overlap. Any grey "
+        "cell is a real zero rather than missing data, and needs three or more "
+        "overlapping crowns to occur at all.",
     "placement_map":
         "Crowns are drawn at true metric radius over the land-use classes, so "
         "overlap between neighbouring trees is shown to scale.",
@@ -354,22 +355,23 @@ def cooling_field(grid, cooling_values, tree_placements=None,
                       thickness=12, len=0.6),
         hovertemplate="(%{x:.0f}, %{y:.0f}) m<br>cooling %{z:.4f}<extra></extra>",
     ))
+
     # Cells the competition term has driven to zero, marked explicitly.
     #
-    # These are REAL ZEROS, not missing data and not a drawing artefact. The
-    # crown-competition damping is 1/(1+exp(K*(CCA - threshold))) with a
-    # threshold of 1.2, but CCA accumulates crown area in SQUARE METRES and a
-    # single crown contributes 70-450 m2. The logistic is fully saturated by
-    # about 10 m2, so the factor is ~0.9975 outside any crown and exactly 0.0
-    # inside one -- a step at the crown edge rather than a graded penalty. The
-    # result is that a tree delivers no cooling at all directly beneath itself.
+    # Kept, though it should now find nothing on a typical solution. It was
+    # added when the damping term compared its threshold of 1.2 against a CCA
+    # accumulating crown area in SQUARE METRES -- 70 to 450 m2 per crown, so the
+    # logistic sat far past saturation and the factor was exactly 0.0 anywhere
+    # under a canopy. Against the near-white low end of the cooling ramp those
+    # real zeros were indistinguishable from "very little cooling" and read as
+    # white discs punched out of the map.
     #
-    # Rendered against the near-white low end of the cooling ramp these zeros
-    # were indistinguishable from "very little cooling", and read as white discs
-    # obscuring the map. Giving them their own colour and legend entry is what
-    # makes the model's behaviour legible instead of looking like a bug in the
-    # plot. Fixing the model itself is a change to the reference implementation
-    # and is not this module's call -- see the README's known-open-items.
+    # CCA is now a count of overlapping crowns and a tree is exempt from its
+    # own, so the damping is graded and a lone canopy is essentially undamped.
+    # Zeros are still REACHABLE where enough crowns pile up (three overlapping
+    # crowns leave a factor of 1.2e-04, and more than that underflows), so the
+    # marking stays: if the field ever goes flat under a canopy again, it should
+    # be visible as a stated fact rather than as an unexplained white disc.
     suppressed = (cooling <= 0.0)
     if suppressed.any():
         mask = np.where(suppressed, 1.0, np.nan)
