@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import glob
 import importlib.util
 import io
 import json
@@ -63,9 +64,26 @@ from core.sensitivity import SensitivityAnalyzer                 # noqa: E402
 from core.species import TreeSpecies                             # noqa: E402
 
 LEGACY_PATH = os.path.join(REPO, "legacy", "AuditedCode_1.py")
-HEADLINE_JSON = os.path.join(
-    REPO, "results", "run_20260820_003124_optionB_results_regeneration",
-    "data", "headline.json")
+
+
+def _latest_headline() -> str | None:
+    """The newest `results/run_*/data/headline.json`, or None if there is none.
+
+    Discovered rather than hardcoded. A hardcoded path went stale the first time
+    the pipeline was re-run (the crown-competition correction superseded the run
+    this used to name -- see docs/DECISIONS.md D-21), and a stale committed
+    reference is worse than no reference at all:
+    the k-sweep would be compared against numbers a superseded model produced
+    and would fail for the right reason with the wrong explanation. Run
+    directories are named `run_<UTC timestamp>_<tag>`, so lexical order is
+    chronological order.
+    """
+    pattern = os.path.join(REPO, "results", "run_*", "data", "headline.json")
+    found = sorted(glob.glob(pattern))
+    return found[-1] if found else None
+
+
+HEADLINE_JSON = _latest_headline()
 
 GRID_SEED = config.DEFAULT_GRID_SEED
 
@@ -326,7 +344,9 @@ def stage3_k_sweep(legacy, lg, ng, legacy_model, legacy_cutoffs,
 
     # The stronger check: against the committed regeneration output, which is
     # where the reported numbers actually come from.
-    if os.path.exists(HEADLINE_JSON):
+    if HEADLINE_JSON and os.path.exists(HEADLINE_JSON):
+        print(f"    regeneration reference: "
+              f"{os.path.relpath(HEADLINE_JSON, REPO)}")
         with open(HEADLINE_JSON) as f:
             headline = json.load(f)
         arch_mismatch = []
@@ -346,7 +366,7 @@ def stage3_k_sweep(legacy, lg, ng, legacy_model, legacy_cutoffs,
                   if not arch_mismatch else f"{len(arch_mismatch)} differ")
     else:
         rep.check(3, "committed regeneration output available", False,
-                  f"not found: {HEADLINE_JSON}")
+                  "no results/run_*/data/headline.json on disk")
 
     rep.stage(3, "k sweep", time.time() - t0)
     return live
