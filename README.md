@@ -83,6 +83,19 @@ Every result the app can compute has a chart. Nothing is tables-only.
 Every chart has a **Save figure** control beneath it, offering PNG at 300 dpi,
 SVG (vector, for typesetting), or a self-contained interactive HTML file.
 
+**Files land in `lilim/exports/`**, named `lilim-<figure>-<timestamp>.<ext>`.
+The app writes them itself and shows you the absolute path it wrote to, with an
+**Open folder** button beside it. That folder is gitignored — it is a scratch
+destination, not a results directory; anything headed for the manuscript belongs
+under `results/`.
+
+The **…or download a copy** button beneath it is the secondary route, and it is
+secondary for a reason: in the desktop window a download is handled by the
+embedded webview, which cancels it outright unless the launcher opts in
+(`lilim.py` now does). A save dialog also leaves "where did it go" to whatever
+folder it was last pointed at. Writing the file here and printing the path
+behaves identically in the window and in a browser tab.
+
 **The caption is written into the saved file.** On screen, captions are page
 text below each chart — that is the only way they stay aligned at any window
 size. But a figure that gets separated from its caveat is how a qualified
@@ -255,6 +268,31 @@ codebase and needs author authorisation, which is still pending there. This
 directory is not that audited codebase, so the fix is applied here directly.
 **Expect the two to disagree on that one figure, and expect `lilim` to be the
 correct one.**
+
+---
+
+## Corrected while this app was being built
+
+Worth knowing about if you are comparing against an older run or an older copy
+of the reference implementation.
+
+- **Crown competition used to zero all cooling beneath every canopy.** The
+  damping term is `1/(1+exp(K·(CCA − threshold)))` with a threshold of `1.2`,
+  but `CCA` accumulated crown area in **square metres** — 70–450 m² for a single
+  crown. The logistic is fully saturated by about 10 m², so it behaved as a step
+  function at the crown edge: ~0.9975 outside any crown, exactly `0.0` inside
+  one. On the canonical grid that zeroed **16.3% of the domain** and destroyed
+  **46.3%** of all generated cooling, and it was physically inverted, since
+  shade is greatest directly under a canopy. It surfaced as unexplained white
+  discs in the cooling-field figure.
+
+  `CCA` is now a **dimensionless count of overlapping crowns**, and a tree is
+  exempt from its own crown, so competition engages only where crowns genuinely
+  overlap. The threshold and steepness constants are unchanged — it was the
+  quantity being compared against them that was wrong. On the same grid,
+  competition now removes **4.6%** of generated cooling rather than 46.3%, no
+  cell is at exactly zero, and mean cooling under a canopy is roughly four times
+  that outside one. **Every number the manuscript reports changed.**
 
 ---
 
