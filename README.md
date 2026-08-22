@@ -281,18 +281,21 @@ of the reference implementation.
   but `CCA` accumulated crown area in **square metres** — 70–450 m² for a single
   crown. The logistic is fully saturated by about 10 m², so it behaved as a step
   function at the crown edge: ~0.9975 outside any crown, exactly `0.0` inside
-  one. On the canonical grid that zeroed **16.3% of the domain** and destroyed
-  **46.3%** of all generated cooling, and it was physically inverted, since
+  one. On the canonical grid that zeroed **15.95% of the domain** and destroyed
+  **46.25%** of all generated cooling, and it was physically inverted, since
   shade is greatest directly under a canopy. It surfaced as unexplained white
   discs in the cooling-field figure.
 
   `CCA` is now a **dimensionless count of overlapping crowns**, and a tree is
   exempt from its own crown, so competition engages only where crowns genuinely
   overlap. The threshold and steepness constants are unchanged — it was the
-  quantity being compared against them that was wrong. On the same grid,
-  competition now removes **4.6%** of generated cooling rather than 46.3%, no
-  cell is at exactly zero, and mean cooling under a canopy is roughly four times
-  that outside one. **Every number the manuscript reports changed.**
+  quantity being compared against them that was wrong. Measured on the *same
+  fixed placement*, so the two are properly paired, and against a
+  bit-identical competition-off control: delivered cooling rises from
+  **1453.67 to 2668.36** against an unchanged **2704.60** ceiling, competition
+  now removes **1.34%** rather than 46.25%, and **not one cell** is at exactly
+  zero (it was 1,595 of the 1,631 cells inside a crown). Cooling is now
+  strongest directly beneath a canopy, which is the physics.
 
 ---
 
@@ -301,20 +304,6 @@ of the reference implementation.
 These are open questions in the science, not bugs in this code. A tool that
 hides them is worse than one that does not exist.
 
-- **A tree delivers exactly zero cooling directly beneath its own canopy.** The
-  crown-competition term damps cooling by `1/(1+exp(K·(CCA − threshold)))`, but
-  `CCA` accumulates crown area in **square metres** (70–450 m² per crown) while
-  the threshold is `1.2`. The logistic is fully saturated by about 10 m², so the
-  factor is ~0.9975 outside any crown and exactly `0.0` inside one — a step at
-  the crown edge, not a graded penalty. On the canonical grid this zeroes
-  **16.3% of the domain** and destroys **46.3%** of all generated cooling, and it
-  is physically inverted, since shade is greatest under a canopy. The threshold
-  reads as a dimensionless overlap measure being compared against an absolute
-  area. **This app reproduces the behaviour exactly** — it is at parity with the
-  reference implementation and must not diverge — but marks the zeroed cells in
-  the cooling-field figure so they are legible as a result rather than mistaken
-  for missing data. Correcting the model changes every reported number and is
-  awaiting an authorship decision.
 - **The coarse equity-weight map** here is corrected; the audited reference
   implementation's version is still its own transpose, pending author sign-off
   on the fix. The two will disagree on that one figure.
