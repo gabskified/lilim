@@ -36,7 +36,7 @@ THE MODEL, IN THREE PARTS
    accumulated area they mean nothing, since one crown alone is 70.9-452.4 m².
    An earlier formulation did accumulate area, which drove the logistic far
    past saturation and made it a step function at the crown edge: cooling was
-   exactly zero beneath every canopy -- 16.3% of the domain and 46.3% of all
+   exactly zero beneath every canopy -- 15.95% of the domain and 46.25% of all
    generated cooling -- while a cell one metre outside the drip line got
    99.75% of it. That is backwards, since canopy shade is greatest directly
    under a tree. Corrected by research-lead decision; the corresponding
